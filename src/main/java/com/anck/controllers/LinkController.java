@@ -1,8 +1,10 @@
 package com.anck.controllers;
 
+import com.anck.DTO.LinkDTO;
 import com.anck.models.Link;
 import com.anck.services.LinkService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -23,6 +25,14 @@ public class LinkController {
     public Long saveLink(@RequestParam(name="link") String originalValue){
         Link newLink = new Link(); // походу это должно быть не в контроллере...:)
         newLink.setOriginalValue(originalValue);
+        return linkService.save(newLink).getId();
+    }
+
+    @PostMapping("/create")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Long saveLink(@RequestBody LinkDTO request){
+        Link newLink = new Link(); // походу это должно быть не в контроллере...:)
+        newLink.setOriginalValue(request.getOriginValue());
         return linkService.save(newLink).getId();
     }
 
