@@ -21,19 +21,16 @@ public class LinkController {
         return linkService.findOne(id);
     }
 
-    @GetMapping("/save")
-    public Long saveLink(@RequestParam(name="link") String originalValue){
-        Link newLink = new Link(); // походу это должно быть не в контроллере...:)
-        newLink.setOriginalValue(originalValue);
-        return linkService.save(newLink).getId();
-    }
-
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public Long saveLink(@RequestBody LinkDTO request){
-        Link newLink = new Link(); // походу это должно быть не в контроллере...:)
-        newLink.setOriginalValue(request.getOriginValue());
-        return linkService.save(newLink).getId();
+    public Long saveLink(@RequestBody LinkDTO linkDTO){
+        return linkService.save(convertToLink(linkDTO)).getId();
+    }
+
+    private Link convertToLink(LinkDTO linkDTO) {
+        Link link = new Link();
+        link.setOriginalValue(linkDTO.getOriginValue());
+        return link;
     }
 
 }
