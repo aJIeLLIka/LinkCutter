@@ -2,13 +2,13 @@ package com.anck.services;
 
 import com.anck.models.Link;
 import com.anck.repositories.LinkRepository;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
+import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,25 +22,59 @@ public class LinkService {
 
     @Transactional
     public Link save(Link link){
-        link.setShortValue(generateShortValue(link.getOriginalValue()));
+        enrichLink(link);
         return linkRepository.save(link);
     }
 
     public Link findOne(Long id){
-        Optional<Link> foundLink = linkRepository.findById(id);
-        return foundLink.orElseThrow(() -> new RuntimeException(
-                "Link with id=" + id + " doesn't exist"));
+        Optional<Link> optionalLinkLink = linkRepository.findById(id);
+        if(optionalLinkLink.isPresent()){
+            Link foundLink = optionalLinkLink.get();
+            updateLastUsageDate(foundLink);
+            return foundLink;
+        }else{
+             throw new RuntimeException("Link with id=" + id + " doesn't exist");
+        }
     }
 
-    public String generateShortValue(String originalValue){// !!!TEMP IMPLEMENTATION!!!
-        Random r = new Random();
-        String shortValue = "";
-        shortValue += (char)(r.nextInt(26) + 'a');
-        shortValue += (char)(r.nextInt(26) + 'a');
-        shortValue += (char)(r.nextInt(26) + 'a');
-        shortValue += (char)(r.nextInt(26) + 'a');
-        shortValue += (char)(r.nextInt(26) + 'a');
-        System.out.println("generateShortValue - " + shortValue);
+    public boolean isPresentOriginalValue(Link link){
+        Optional<Link> checkedLink = linkRepository.findByOriginalValue(link.getOriginalValue());
+        if(checkedLink.isPresent()){
+            link.setId(checkedLink.get().getId());
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private boolean isPresentShortValue(String shortValue){
+        Optional<Link> link = linkRepository.findByShortValue(shortValue);
+        if(link.isPresent()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private void enrichLink(Link link){
+        link.setShortValue(generateShortValue());
+        link.setCreationDate(LocalDateTime.now());
+        link.setLastUsageDate(LocalDateTime.now());
+    }
+
+    private void updateLastUsageDate(Link link){
+        link.setLastUsageDate(LocalDateTime.now());
+        linkRepository.save(link);
+    }
+
+    private String generateShortValue(){
+        String shortValue;
+        do {
+            int shortValueLength = (int) (Math.random() * (10 - 5 + 1) + 5); //рандом от 5 до 10
+            shortValue = RandomStringUtils.randomAlphanumeric(shortValueLength);
+            System.out.println("shortValue = "+shortValue);
+        }while (isPresentShortValue(shortValue));
         return shortValue;
     }
+
 }
