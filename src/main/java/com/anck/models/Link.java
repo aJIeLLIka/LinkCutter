@@ -1,5 +1,6 @@
 package com.anck.models;
 
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -10,7 +11,8 @@ public class Link {
     @Column(name = "id", nullable = false)
     @GeneratedValue()
     private Long id;
-    @Column(name = "original_value", unique = true)
+
+    @Column(name = "original_value", nullable = false, unique = true)
     private String originalValue;
     @Column(name = "short_value", unique = true)
     private String shortValue;

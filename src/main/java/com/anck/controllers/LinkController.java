@@ -26,6 +26,7 @@ public class LinkController {
     @ResponseStatus(HttpStatus.CREATED)
     public Long saveLink(@RequestBody RequestLinkDto requestLinkDto){
         Link linkForSave = convertToLink(requestLinkDto);
+        System.out.println(linkForSave.getOriginalValue());
         if(linkService.isPresentOriginalValue(linkForSave)){
             return linkForSave.getId();
         }else {
