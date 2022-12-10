@@ -12,34 +12,41 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class LinkController {
     private final LinkService linkService;
+
     @Autowired
     public LinkController(LinkService linkService) {
         this.linkService = linkService;
     }
 
     @GetMapping("/getLink")
-    public Link getLink(@RequestParam(name="id") Long id){
+    public Link getLink(@RequestParam(name = "id") Long id) {
         return linkService.findOne(id);
     }
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public Long saveLink(@RequestBody RequestLinkDto requestLinkDto){
+    public Long saveLink(@RequestBody RequestLinkDto requestLinkDto) {
         Link linkForSave = convertToLink(requestLinkDto);
         System.out.println(linkForSave.getOriginalValue());
-        if(linkService.isPresentOriginalValue(linkForSave)){
+        if (linkService.isPresentOriginalValue(linkForSave)) {
             return linkForSave.getId();
-        }else {
+        } else {
             return linkService.save(linkForSave).getId();
         }
     }
+
 
     private Link convertToLink(RequestLinkDto requestLinkDto) {
         return new Link(requestLinkDto.getOriginalValue());
     }
 
-    private ResponseLinkDto convertToResponseDto(Link link){
+    private ResponseLinkDto convertToResponseDto(Link link) {
         return new ResponseLinkDto(link.getId(), link.getOriginalValue(), link.getShortValue());
+    }
+
+    @PostMapping("/createShortLink")
+    public String createShortLink(@RequestBody RequestLinkDto requestLinkDto) {
+        return linkService.getShortLink(requestLinkDto);
     }
 
 }
