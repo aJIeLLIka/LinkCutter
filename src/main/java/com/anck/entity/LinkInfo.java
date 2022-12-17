@@ -5,8 +5,8 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Links")
-public class Link {
+@Table(name = "LinkInfo")
+public class LinkInfo {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,9 +21,9 @@ public class Link {
     @Column(name = "last_usage_date")
     private LocalDateTime lastUsageDate;
 
-    public Link() {
+    public LinkInfo() {
     }
-    public Link(String originalValue) {
+    public LinkInfo(String originalValue) {
         this.originalValue = originalValue;
     }
 

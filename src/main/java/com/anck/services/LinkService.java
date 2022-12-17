@@ -2,67 +2,68 @@ package com.anck.services;
 
 import com.anck.dto.RequestLinkDto;
 import com.anck.dto.ResponseLinkDto;
-import com.anck.entity.Link;
+import com.anck.entity.LinkInfo;
 import com.anck.repositories.LinkRepository;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class LinkService {
 
     private final LinkRepository linkRepository;
+    private final GeneratorService generatorService;
 
-    //    @Value("${random.generated.string.length}")
-//    private int generatedStringLength;
     @Autowired
-    public LinkService(LinkRepository linkRepository) {
+    public LinkService(LinkRepository linkRepository, GeneratorService generatorService) {
         this.linkRepository = linkRepository;
-    }
-
-    @Transactional
-    public Link save(RequestLinkDto requestLinkDto) {
-        Link link = new Link();
-        link.setOriginalValue(requestLinkDto.getOriginalValue());
-        link.setCreationDate(LocalDateTime.now());
-        link.setLastUsageDate(LocalDateTime.now());
-        link.setShortValue(generateShortValue());
-        return linkRepository.save(link);
+        this.generatorService = generatorService;
     }
 
     public ResponseLinkDto getShortValue(RequestLinkDto requestLinkDto) {
-        Optional<Link> optionalLink =
+        Optional<LinkInfo> optionalLink =
                 linkRepository.findByOriginalValue(requestLinkDto.getOriginalValue());
         if (optionalLink.isPresent()) {
-            Link foundLink = optionalLink.get();
+            LinkInfo foundLink = optionalLink.get();
             updateLastUsageDate(foundLink.getId());
-            return convertToResponseDto(foundLink);
+            return convertToResponseDto(foundLink.getShortValue());
         } else {
-            return convertToResponseDto(save(requestLinkDto));
+            LinkInfo savedEntity = saveLinkInfo(requestLinkDto);
+            return convertToResponseDto(savedEntity.getShortValue());
         }
+    }
+
+    public ResponseLinkDto getLongLinkByShortValue(String originalValue) {
+        if (originalValue == null || originalValue.isBlank())
+            throw new IllegalArgumentException("parameter of original link value is not present");
+
+        Optional<LinkInfo> optionalOriginalValue = linkRepository.findByShortValue(originalValue);
+        LinkInfo linkInfo = optionalOriginalValue.orElseThrow(EntityNotFoundException::new);
+        return convertToResponseDto(linkInfo.getOriginalValue());
+
+    }
+
+    @Transactional
+    public LinkInfo saveLinkInfo(RequestLinkDto requestLinkDto) {
+        LinkInfo link = new LinkInfo();
+        link.setOriginalValue(requestLinkDto.getOriginalValue());
+        link.setCreationDate(LocalDateTime.now());
+        link.setLastUsageDate(LocalDateTime.now());
+        link.setShortValue(generatorService.generateShortValue());
+        return linkRepository.save(link);
     }
 
     private int updateLastUsageDate(Long id) {
         return linkRepository.updateLastUsage(id);
     }
 
-    private String generateShortValue() {
-        String shortValue = RandomStringUtils.randomAlphanumeric(10);
-        System.out.println("shortValue = " + shortValue);
-        return shortValue;
-    }
-
-    public Link convertToLink(RequestLinkDto requestLinkDto) {
-        return new Link(requestLinkDto.getOriginalValue());
-    }
-
-    public ResponseLinkDto convertToResponseDto(Link link) {
-        return new ResponseLinkDto(link.getShortValue());
+    public ResponseLinkDto convertToResponseDto(String linkValue) {
+        return new ResponseLinkDto(linkValue);
     }
 
 }

@@ -21,9 +21,9 @@ public class LinkController {
         return linkService.getShortValue(requestLinkDto);
     }
 
-//    @GetMapping("/createShortLink")
-//    public ResponseLinkDto createShortValue(@RequestParam(name = "orig") String orig) {
-//        return linkService.getShortValue(new RequestLinkDto(orig));
-//    }
+    @GetMapping("/getOriginalLink")
+    public ResponseLinkDto getOriginalValue(@RequestParam(name = "shortLink") String shortLink) {
+        return linkService.getLongLinkByShortValue(shortLink);
+    }
 
 }

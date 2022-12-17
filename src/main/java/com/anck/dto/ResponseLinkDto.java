@@ -2,14 +2,14 @@ package com.anck.dto;
 
 public class ResponseLinkDto {
 
-    private final String shortValue;
+    private final String linkValue;
 
-    public ResponseLinkDto(String shortValue) {
-        this.shortValue = shortValue;
+    public ResponseLinkDto(String linkValue) {
+        this.linkValue = linkValue;
     }
 
-    public String getShortValue() {
-        return shortValue;
+    public String getLinkValue() {
+        return linkValue;
     }
 
 }
