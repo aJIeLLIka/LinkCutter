@@ -1,6 +1,8 @@
 package com.anck.services;
 
-import com.anck.models.Link;
+import com.anck.dto.RequestLinkDto;
+import com.anck.dto.ResponseLinkDto;
+import com.anck.entity.Link;
 import com.anck.repositories.LinkRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,66 +17,52 @@ import java.util.Optional;
 public class LinkService {
 
     private final LinkRepository linkRepository;
+
+    //    @Value("${random.generated.string.length}")
+//    private int generatedStringLength;
     @Autowired
     public LinkService(LinkRepository linkRepository) {
         this.linkRepository = linkRepository;
     }
 
     @Transactional
-    public Link save(Link link){
-        enrichLink(link);
+    public Link save(RequestLinkDto requestLinkDto) {
+        Link link = new Link();
+        link.setOriginalValue(requestLinkDto.getOriginalValue());
+        link.setCreationDate(LocalDateTime.now());
+        link.setLastUsageDate(LocalDateTime.now());
+        link.setShortValue(generateShortValue());
         return linkRepository.save(link);
     }
 
-    public Link findOne(Long id){
-        Optional<Link> optionalLinkLink = linkRepository.findById(id);
-        if(optionalLinkLink.isPresent()){
-            Link foundLink = optionalLinkLink.get();
-            updateLastUsageDate(foundLink);
-            return foundLink;
-        }else{
-             throw new RuntimeException("Link with id=" + id + " doesn't exist");
+    public ResponseLinkDto getShortValue(RequestLinkDto requestLinkDto) {
+        Optional<Link> optionalLink =
+                linkRepository.findByOriginalValue(requestLinkDto.getOriginalValue());
+        if (optionalLink.isPresent()) {
+            Link foundLink = optionalLink.get();
+            updateLastUsageDate(foundLink.getId());
+            return convertToResponseDto(foundLink);
+        } else {
+            return convertToResponseDto(save(requestLinkDto));
         }
     }
 
-    public boolean isPresentOriginalValue(Link link){
-        Optional<Link> checkedLink = linkRepository.findByOriginalValue(link.getOriginalValue());
-        if(checkedLink.isPresent()){
-            link.setId(checkedLink.get().getId());
-            return true;
-        }else{
-            return false;
-        }
+    private int updateLastUsageDate(Long id) {
+        return linkRepository.updateLastUsage(id);
     }
 
-    private boolean isPresentShortValue(String shortValue){
-        Optional<Link> link = linkRepository.findByShortValue(shortValue);
-        if(link.isPresent()){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-    private void enrichLink(Link link){
-        link.setShortValue(generateShortValue());
-        link.setCreationDate(LocalDateTime.now());
-        link.setLastUsageDate(LocalDateTime.now());
-    }
-
-    private void updateLastUsageDate(Link link){
-        link.setLastUsageDate(LocalDateTime.now());
-        linkRepository.save(link);
-    }
-
-    private String generateShortValue(){
-        String shortValue;
-        do {
-            int shortValueLength = (int) (Math.random() * (10 - 5 + 1) + 5); //рандом от 5 до 10
-            shortValue = RandomStringUtils.randomAlphanumeric(shortValueLength);
-            System.out.println("shortValue = "+shortValue);
-        }while (isPresentShortValue(shortValue));
+    private String generateShortValue() {
+        String shortValue = RandomStringUtils.randomAlphanumeric(10);
+        System.out.println("shortValue = " + shortValue);
         return shortValue;
+    }
+
+    public Link convertToLink(RequestLinkDto requestLinkDto) {
+        return new Link(requestLinkDto.getOriginalValue());
+    }
+
+    public ResponseLinkDto convertToResponseDto(Link link) {
+        return new ResponseLinkDto(link.getShortValue());
     }
 
 }

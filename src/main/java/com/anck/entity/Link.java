@@ -1,4 +1,4 @@
-package com.anck.models;
+package com.anck.entity;
 
 
 import javax.persistence.*;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class Link {
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "original_value", nullable = false, unique = true)
