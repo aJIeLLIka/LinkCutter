@@ -2,7 +2,10 @@ package com.anck.dto;
 
 public class RequestLinkDto {
 
-    private final String originalValue;
+    private String originalValue;
+
+    public RequestLinkDto() {
+    }
 
     public RequestLinkDto(String originalValue) {
         this.originalValue = originalValue;
@@ -11,5 +14,7 @@ public class RequestLinkDto {
     public String getOriginalValue() {
         return originalValue;
     }
-
+    public void setOriginalValue(String originalValue) {
+        this.originalValue = originalValue;
+    }
 }

@@ -2,7 +2,10 @@ package com.anck.dto;
 
 public class ResponseLinkDto {
 
-    private final String shortValue;
+    private String shortValue;
+
+    public ResponseLinkDto() {
+    }
 
     public ResponseLinkDto(String shortValue) {
         this.shortValue = shortValue;
@@ -12,4 +15,7 @@ public class ResponseLinkDto {
         return shortValue;
     }
 
+    public void setShortValue(String shortValue) {
+        this.shortValue = shortValue;
+    }
 }

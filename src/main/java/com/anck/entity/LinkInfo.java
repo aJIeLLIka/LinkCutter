@@ -5,25 +5,27 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Links")
-public class Link {
+@Table(name = "LinkInfo", indexes = {
+        @Index(name = "original_value_index", columnList = "original_value"),
+        @Index(name = "short_value_index", columnList = "short_value")})
+
+public class LinkInfo {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(name = "original_value", nullable = false, unique = true)
     private String originalValue;
     @Column(name = "short_value", unique = true)
     private String shortValue;
-    @Column(name = "creation_date")
+    @Column(name = "creation_date", nullable = false)
     private LocalDateTime creationDate;
-    @Column(name = "last_usage_date")
+    @Column(name = "last_usage_date", nullable = false)
     private LocalDateTime lastUsageDate;
 
-    public Link() {
+    public LinkInfo() {
     }
-    public Link(String originalValue) {
+    public LinkInfo(String originalValue) {
         this.originalValue = originalValue;
     }
 
