@@ -1,6 +1,7 @@
 package generics;
 
 public class GenericMain {
+
     public static void main(String[] args) {
 
         Apple apl1 = new Apple("apple1", 1);
