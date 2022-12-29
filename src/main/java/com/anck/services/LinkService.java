@@ -31,7 +31,6 @@ public class LinkService {
         link.setCreationDate(LocalDateTime.now());
         link.setLastUsageDate(LocalDateTime.now());
         link.setShortValue(generatorService.generateShortValue());
-
         return linkRepository.save(link);
     }
 
@@ -42,10 +41,10 @@ public class LinkService {
         if (optionalLink.isPresent()) {
             LinkInfo foundLink = optionalLink.get();
             updateLastUsageDate(foundLink.getId());
-            return convertToResponseDto(foundLink.getShortValue());
+            return convertToResponseDto(foundLink);
         } else {
             LinkInfo savedEntity = saveLinkInfo(requestLinkDto);
-            return convertToResponseDto(savedEntity.getShortValue());
+            return convertToResponseDto(savedEntity);
         }
     }
 
@@ -56,7 +55,7 @@ public class LinkService {
         Optional<LinkInfo> optionalOriginalValue = linkRepository.findByShortValue(originalValue);
         LinkInfo linkInfo = optionalOriginalValue.orElseThrow(() ->
                 new EntityNotFoundException("Link with this value doesn't exist"));
-        return convertToResponseDto(linkInfo.getOriginalValue());
+        return convertToResponseDto(linkInfo);
 
     }
 
@@ -68,8 +67,8 @@ public class LinkService {
         return new LinkInfo(requestLinkDto.getOriginalValue());
     }
 
-    public ResponseLinkDto convertToResponseDto(String linkValue) {
-        return new ResponseLinkDto(linkValue);
+    public ResponseLinkDto convertToResponseDto(LinkInfo linkInfo) {
+        return new ResponseLinkDto(linkInfo.getOriginalValue(), linkInfo.getShortValue());
     }
 
 }
