@@ -24,7 +24,7 @@ public class GenericMain {
 
         System.out.println(appleBox.getBoxWeight());
         System.out.println(appleBox2.getBoxWeight());
-        appleBox.addOtherBox(appleBox2);
+        appleBox.addFruitsFromOtherBox(appleBox2);
 
         System.out.println(appleBox.getBoxWeight());
         System.out.println(appleBox2.getBoxWeight());
