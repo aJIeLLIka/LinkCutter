@@ -1,7 +1,7 @@
 package generics;
 
-public class Orange extends Fruit{
-    private String name;
+public class Orange extends Fruit {
+    private final String name;
 
     public Orange(String name, float weight) {
         super(weight);
@@ -10,9 +10,5 @@ public class Orange extends Fruit{
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }
