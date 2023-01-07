@@ -1,36 +1,35 @@
 package com.anck.controllers;
 
-import com.anck.DTO.LinkDTO;
-import com.anck.models.Link;
+import com.anck.dto.RequestLinkDto;
+import com.anck.dto.ResponseLinkDto;
 import com.anck.services.LinkService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.EntityNotFoundException;
 
 
 @RestController
 public class LinkController {
     private final LinkService linkService;
+
     @Autowired
     public LinkController(LinkService linkService) {
         this.linkService = linkService;
     }
 
-    @GetMapping("/getLink")
-    public Link getLink(@RequestParam(name="id") Long id){
-        return linkService.findOne(id);
+    @PostMapping("/createShortLink")
+    public ResponseLinkDto createShortValue(@RequestBody RequestLinkDto requestLinkDto) {
+        System.out.println(requestLinkDto.getOriginalValue());
+        return linkService.getShortValue(requestLinkDto);
     }
 
-    @PostMapping("/create")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Long saveLink(@RequestBody LinkDTO linkDTO){
-        return linkService.save(convertToLink(linkDTO)).getId();
-    }
-
-    private Link convertToLink(LinkDTO linkDTO) {
-        Link link = new Link();
-        link.setOriginalValue(linkDTO.getOriginValue());
-        return link;
+    @GetMapping("/getOriginalLink")
+    public ResponseLinkDto getOriginalValue(@RequestParam(name = "shortValue") String shortValue) {
+        return linkService.getLongLinkByShortValue(shortValue);
     }
 
 }
