@@ -1,0 +1,15 @@
+# Datasource, # postgres
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/link_cutter_db
+    username: postgres
+    password: 1111
+    driverClassName: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+
+#app
+app:
+  shortValueLength: 10
