@@ -55,7 +55,7 @@ class LinkControllerWithRepositoryMockTest {
         when(linkRepositoryMock.findByShortValue("exist"))
                 .thenReturn(Optional.of(presentLink));
 
-        this.mockMvc.perform(get("/getOriginalLink?shortValue=exist"))
+        this.mockMvc.perform(get("/api/getOriginalLink?shortValue=exist"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.originalValue").value("origValue"))
@@ -64,7 +64,7 @@ class LinkControllerWithRepositoryMockTest {
 
     @Test
     void getOriginalValueShouldThrowIllegalArgumentException() throws Exception {
-        this.mockMvc.perform(get("/getOriginalLink?shortValue= ")
+        this.mockMvc.perform(get("/api/getOriginalLink?shortValue= ")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -76,7 +76,7 @@ class LinkControllerWithRepositoryMockTest {
     void getOriginalValueShouldThrowEntityNotFoundException() throws Exception {
         when(linkRepositoryMock.findByShortValue("nonExist"))
                 .thenReturn(Optional.empty());
-        this.mockMvc.perform(get("/getOriginalLink?shortValue=nonExist")
+        this.mockMvc.perform(get("/api/getOriginalLink?shortValue=nonExist")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -91,7 +91,7 @@ class LinkControllerWithRepositoryMockTest {
                 .thenReturn(Optional.of(presentLink));
 
         String existOrigValueDto = objectMapper.writeValueAsString(new RequestLinkDto("existOrigValue"));
-        this.mockMvc.perform(post("/createShortLink")
+        this.mockMvc.perform(post("/api/createShortLink")
                         .content(existOrigValueDto)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -111,7 +111,7 @@ class LinkControllerWithRepositoryMockTest {
                 .thenReturn(newLink);
 
         String nonExistOrigValueDto = objectMapper.writeValueAsString(new RequestLinkDto("nonExistOrigValue"));
-        this.mockMvc.perform(post("/createShortLink")
+        this.mockMvc.perform(post("/api/createShortLink")
                         .content(nonExistOrigValueDto)
                         .contentType(MediaType.APPLICATION_JSON)
                 )

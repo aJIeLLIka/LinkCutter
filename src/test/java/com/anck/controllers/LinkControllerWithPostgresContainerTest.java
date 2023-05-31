@@ -61,7 +61,7 @@ public class LinkControllerWithPostgresContainerTest {
     void createShortValue() throws Exception {
         String requestDto = objectMapper.writeValueAsString(new RequestLinkDto("newOrigValue"));
 
-        ResultActions perform = this.mockMvc.perform(post("/createShortLink")
+        ResultActions perform = this.mockMvc.perform(post("/api/createShortLink")
                 .content(requestDto)
                 .contentType(MediaType.APPLICATION_JSON)
         );
@@ -76,7 +76,7 @@ public class LinkControllerWithPostgresContainerTest {
     @Test
     void complexTestSuccessGetOriginalValue() throws Exception {
         String newOrigValueDto = objectMapper.writeValueAsString(new RequestLinkDto("origValue"));
-        ResultActions postCreateShortLink = this.mockMvc.perform(post("/createShortLink")
+        ResultActions postCreateShortLink = this.mockMvc.perform(post("/api/createShortLink")
                 .content(newOrigValueDto)
                 .contentType(MediaType.APPLICATION_JSON)
         );
@@ -84,7 +84,7 @@ public class LinkControllerWithPostgresContainerTest {
         ResponseLinkDto responseCreatedLink = objectMapper.readValue(
                 postCreateShortLink.andReturn().getResponse().getContentAsString(), ResponseLinkDto.class);
 
-        mockMvc.perform(get("/getOriginalLink?shortValue=" + responseCreatedLink.getShortValue()))
+        mockMvc.perform(get("/api/getOriginalLink?shortValue=" + responseCreatedLink.getShortValue()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.originalValue").value("origValue"))
@@ -93,7 +93,7 @@ public class LinkControllerWithPostgresContainerTest {
 
     @Test
     void getOriginalValueShouldThrowIllegalArgumentException() throws Exception {
-        this.mockMvc.perform(get("/getOriginalLink?shortValue= ")
+        this.mockMvc.perform(get("/api/getOriginalLink?shortValue= ")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -103,7 +103,7 @@ public class LinkControllerWithPostgresContainerTest {
 
     @Test
     void getOriginalValueShouldThrowEntityNotFoundException() throws Exception {
-        this.mockMvc.perform(get("/getOriginalLink?shortValue=nonExist")
+        this.mockMvc.perform(get("/api/getOriginalLink?shortValue=nonExist")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
