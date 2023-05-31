@@ -13,6 +13,7 @@ import javax.persistence.EntityNotFoundException;
 
 
 @RestController
+@RequestMapping("/api")
 public class LinkController {
     private final LinkService linkService;
 
